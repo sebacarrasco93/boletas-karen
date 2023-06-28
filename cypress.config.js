@@ -11,6 +11,10 @@ module.exports = defineConfig({
           const archivos = fs.readdirSync(carpeta);
 
           const archivosPDF = archivos.filter((archivo) => {
+            if (archivo == 'Informe.pdf') {
+              return false;
+            }
+
             const extension = path.extname(archivo).toLowerCase();
             return extension === '.pdf';
           });

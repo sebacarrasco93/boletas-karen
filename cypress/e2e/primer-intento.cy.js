@@ -49,7 +49,7 @@ describe('Primer intente', () => {
           //   .type('Sebastián Carrasco Poblete')
 
           cy.get('#archivo').selectFile(`DEJAR_BOLETAS/${archivo}`, { force: true });
-          // cy.get('#archivo_oa').selectFile(`DEJAR_BOLETAS/${archivo}`, { force: true });
+          cy.get('#archivo_oa').selectFile(`DEJAR_BOLETAS/Informe.pdf`, { force: true });
           cy.get('#chk_verificacion')
             .click();
         }
