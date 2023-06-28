@@ -1,11 +1,11 @@
 describe('Primer intento', () => {
   it(`Procesar`, () => {
+    // Eliminar archivos ya subidos
+    cy.task('eliminarArchivosYaSubidos');
+
     cy.intercept('GET', 'https://api.elipsechat.com', { fixture: 'stub.json' }).as('apiRequest');
 
     cy.visit('https://nuevamasvida.cl');
-
-    // Eliminar archivos ya subidos
-    cy.task('eliminarArchivosYaSubidos');
     
     // Escribir RUT
     cy.get('#rut')

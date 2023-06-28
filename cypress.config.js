@@ -32,7 +32,7 @@ module.exports = defineConfig({
           const archivos = fs.readdirSync(carpeta);
 
           archivos.forEach(archivo => {
-            if (fs.existsSync(`${carpeta}/${archivo}`) && fs.existsSync(`${carpeta}/__SUBIDA__'${archivo}`)) {
+            if (fs.existsSync(`${carpeta}/${archivo}`) && fs.existsSync(`${carpeta}/__SUBIDA__${archivo}`)) {
               return fs.unlinkSync(`${carpeta}/${archivo}`) ? true : false;
             }
 
