@@ -22,6 +22,12 @@ module.exports = defineConfig({
           return archivosPDF;
         },
       });
+
+      on('task', {
+        renombrarArchivo(archivo) {
+          return fs.renameSync('DEJAR_BOLETAS/'+archivo, 'DEJAR_BOLETAS/__'+archivo) ? true : false;
+        },
+      });
       
       // implement node event listeners here
     },
