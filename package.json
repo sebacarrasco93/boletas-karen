@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "cypress": "./node_modules/.bin/cypress open"
+    "cy:run": "cypress run",
+    "start": "cypress run --browser chrome --headed --spec cypress/e2e/primer-intento.cy.js"
   },
   "author": "",
   "license": "ISC",

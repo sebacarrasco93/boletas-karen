@@ -11,7 +11,7 @@ module.exports = defineConfig({
           const archivos = fs.readdirSync(carpeta);
 
           return archivos.filter((archivo) => {
-            if (archivo !== 'Informe.pdf' || archivo.includes('__SUBIDA__')) {
+            if (archivo !== 'Informe.pdf' && ! archivo.includes('__SUBIDA__') && ! archivo.includes('__')) {
               const extension = path.extname(archivo).toLowerCase();
               return extension === '.pdf';
             }
