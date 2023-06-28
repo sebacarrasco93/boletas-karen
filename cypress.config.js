@@ -26,12 +26,18 @@ module.exports = defineConfig({
       });
 
       on('task', {
-        eliminarArchivoYaSubido(archivo) {
-          if (fs.existsSync('DEJAR_BOLETAS/'+archivo) && fs.existsSync('DEJAR_BOLETAS/__SUBIDA__'+archivo)) {
-            return fs.unlinkSync('DEJAR_BOLETAS/'+archivo) ? true : false;
-          }
+        eliminarArchivosYaSubidos() {
+          const archivos = fs.readdirSync('DEJAR_BOLETAS');
 
-          return false;
+          archivos.forEach(archivo => {
+            if (fs.existsSync('DEJAR_BOLETAS/'+archivo) && fs.existsSync('DEJAR_BOLETAS/__SUBIDA__'+archivo)) {
+              return fs.unlinkSync('DEJAR_BOLETAS/'+archivo) ? true : false;
+            }
+
+            return false;
+          });
+
+          return true;
         }
       });
       

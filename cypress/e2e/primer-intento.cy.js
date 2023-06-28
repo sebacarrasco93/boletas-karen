@@ -1,6 +1,9 @@
 describe('Primer intente', () => {
   it(`Procesar`, () => {
     cy.visit('https://nuevamasvida.cl');
+
+    // Eliminar archivos ya subidos
+    cy.task('eliminarArchivosYaSubidos');
     
     // Escribir RUT
     cy.get('#rut')
