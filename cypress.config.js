@@ -5,8 +5,10 @@ const path = require('path');
 module.exports = defineConfig({
   e2e: {
     setupNodeEvents(on, config) {
+      const carpeta = 'DEJAR_BOLETAS';
+
       on('task', {
-        obtenerArchivosEnCarpeta(carpeta) {
+        obtenerArchivosEnCarpeta() {
           const rutaCarpeta = path.join(__dirname, carpeta);
           const archivos = fs.readdirSync(carpeta);
 
@@ -21,17 +23,17 @@ module.exports = defineConfig({
 
       on('task', {
         renombrarArchivo(archivo) {
-          return fs.renameSync('DEJAR_BOLETAS/'+archivo, 'DEJAR_BOLETAS/__SUBIDA__'+archivo) ? true : false;
+          return fs.renameSync(`${carpeta}/${archivo}`, carpeta+'/__SUBIDA__'+archivo) ? true : false;
         }
       });
 
       on('task', {
         eliminarArchivosYaSubidos() {
-          const archivos = fs.readdirSync('DEJAR_BOLETAS');
+          const archivos = fs.readdirSync(carpeta);
 
           archivos.forEach(archivo => {
-            if (fs.existsSync('DEJAR_BOLETAS/'+archivo) && fs.existsSync('DEJAR_BOLETAS/__SUBIDA__'+archivo)) {
-              return fs.unlinkSync('DEJAR_BOLETAS/'+archivo) ? true : false;
+            if (fs.existsSync(`${carpeta}/${archivo}`) && fs.existsSync(`${carpeta}/__SUBIDA__'${archivo}`)) {
+              return fs.unlinkSync(`${carpeta}/${archivo}`) ? true : false;
             }
 
             return false;

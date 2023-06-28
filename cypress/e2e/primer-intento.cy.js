@@ -1,5 +1,7 @@
-describe('Primer intente', () => {
+describe('Primer intento', () => {
   it(`Procesar`, () => {
+    cy.intercept('GET', 'https://api.elipsechat.com', { fixture: 'stub.json' }).as('apiRequest');
+
     cy.visit('https://nuevamasvida.cl');
 
     // Eliminar archivos ya subidos
@@ -11,15 +13,15 @@ describe('Primer intente', () => {
 
     // Escribir Clave y esperar 1,5 segundos
     cy.get('#clave')
-      .type(Cypress.env('CLAVE'))
-      .wait(1500);
+      .type(Cypress.env('CLAVE'));
+      // .wait(500);
 
     // Entrar
     cy.get('[value="Ingresar"]')
       .click();
 
     // Revisar archivos en la carpeta
-    cy.task('obtenerArchivosEnCarpeta', 'DEJAR_BOLETAS').then((archivos) => {
+    cy.task('obtenerArchivosEnCarpeta').then((archivos) => {
       archivos.forEach((archivo) => {
         cy.log(`Procesando ${archivo}`);
 
@@ -65,7 +67,7 @@ describe('Primer intente', () => {
           cy.get('#srw_rut_tratante')
             .type(rutEncontrado.RUT_PROFESIONAL);
           // cy.get('#srw_nom_tratante')
-          //   .type('Sebastián Carrasco Poblete')
+            // .type('Sebastián Carrasco Poblete')
 
           // Adjuntar archivos
           cy.get('#archivo').selectFile(`DEJAR_BOLETAS/${archivo}`, { force: true });
@@ -75,9 +77,20 @@ describe('Primer intente', () => {
           cy.get('#chk_verificacion')
             .click();
 
+          // Darle 100 ms para que aparezca el nombre del profesional
+          cy.wait(100);
+
           // Subir y esperar
           cy.get('#procesar_solreembolso')
             .click();
+
+          // Esperar que no salga error
+          cy.get('#error').should('not.visible');
+
+          // Verificar que se haya subido
+
+          cy.get('#resp_registro > .titulo').contains('Solicitud enviada');
+
 
           cy.task('renombrarArchivo', archivo);
         }
