@@ -6,6 +6,18 @@ describe('Primer intente', () => {
 
   boletas.forEach((archivo) => {
     it(`Intentando subir ${archivo}`, () => {
+
+      // TODO Eliminar esto después
+      cy.task('obtenerArchivosEnCarpeta', 'DEJAR_BOLETAS').then((archivos) => {
+        archivos.forEach((archivo) => {
+          const arrayDatos = archivo.split('-');
+          const rutDocumento = arrayDatos[0].replace('bhe_', '');
+          const folioDocumento = arrayDatos[1];
+          cy.log(`RUT ${rutDocumento}`);
+          cy.log(`Folio ${folioDocumento}`);
+        });
+      });
+
       cy.visit('https://nuevamasvida.cl');
       cy.get('#rut')
         .type(Cypress.env('RUT'));
