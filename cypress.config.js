@@ -10,22 +10,18 @@ module.exports = defineConfig({
           const rutaCarpeta = path.join(__dirname, carpeta);
           const archivos = fs.readdirSync(carpeta);
 
-          const archivosPDF = archivos.filter((archivo) => {
-            if (archivo == 'Informe.pdf') {
-              return false;
+          return archivos.filter((archivo) => {
+            if (archivo !== 'Informe.pdf' || archivo.includes('__SUBIDA__')) {
+              const extension = path.extname(archivo).toLowerCase();
+              return extension === '.pdf';
             }
-
-            const extension = path.extname(archivo).toLowerCase();
-            return extension === '.pdf';
           });
-            
-          return archivosPDF;
         },
       });
 
       on('task', {
         renombrarArchivo(archivo) {
-          return fs.renameSync('DEJAR_BOLETAS/'+archivo, 'DEJAR_BOLETAS/__'+archivo) ? true : false;
+          return fs.renameSync('DEJAR_BOLETAS/'+archivo, 'DEJAR_BOLETAS/__SUBIDA__'+archivo) ? true : false;
         },
       });
       

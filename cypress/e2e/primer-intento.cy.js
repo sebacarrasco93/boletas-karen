@@ -1,14 +1,11 @@
 describe('Primer intente', () => {
   it(`Subiendo`, () => {
-    // cy.task('obtenerArchivosEnCarpeta', 'DEJAR_BOLETAS').then((archivos) => {
-      
-    // });
-
     cy.visit('https://nuevamasvida.cl');
     cy.get('#rut')
       .type(Cypress.env('RUT'));
     cy.get('#clave')
-      .type(Cypress.env('CLAVE'));
+      .type(Cypress.env('CLAVE'))
+      .wait(1500);
     cy.get('[value="Ingresar"]')
       .click();
     cy.task('obtenerArchivosEnCarpeta', 'DEJAR_BOLETAS').then((archivos) => {
@@ -52,6 +49,8 @@ describe('Primer intente', () => {
           cy.get('#archivo_oa').selectFile(`DEJAR_BOLETAS/Informe.pdf`, { force: true });
           cy.get('#chk_verificacion')
             .click();
+
+          cy.task('renombrarArchivo', archivo);
         }
       });
     });
