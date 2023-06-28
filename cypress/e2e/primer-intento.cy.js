@@ -1,13 +1,9 @@
-let fs = require("fs");
-
 describe('Primer intente', () => {
 
   const boletas = ['Kinesióloga'];
 
   boletas.forEach((archivo) => {
     it(`Intentando subir ${archivo}`, () => {
-
-      // TODO Eliminar esto después
       cy.task('obtenerArchivosEnCarpeta', 'DEJAR_BOLETAS').then((archivos) => {
         archivos.forEach((archivo) => {
           const arrayDatos = archivo.split('-');
