@@ -22,7 +22,17 @@ module.exports = defineConfig({
       on('task', {
         renombrarArchivo(archivo) {
           return fs.renameSync('DEJAR_BOLETAS/'+archivo, 'DEJAR_BOLETAS/__SUBIDA__'+archivo) ? true : false;
-        },
+        }
+      });
+
+      on('task', {
+        eliminarArchivoYaSubido(archivo) {
+          if (fs.existsSync('DEJAR_BOLETAS/'+archivo) && fs.existsSync('DEJAR_BOLETAS/__SUBIDA__'+archivo)) {
+            return fs.unlinkSync('DEJAR_BOLETAS/'+archivo) ? true : false;
+          }
+
+          return false;
+        }
       });
       
       // implement node event listeners here
