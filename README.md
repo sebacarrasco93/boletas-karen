@@ -64,21 +64,23 @@ En este caso, la parte de DATOS_PROFESIONALES debería quedar así:
     {
       "TIPO_CONSULTA": "Consulta médica",
       "RUT_EMPRESA": "98765432-1",
-      "NOMBRE_PROFESIONAL": "MAXIMO LEON CARRASCO GARRIDO",
+      "NOMBRE_PROFESIONAL": "CARRASCO GARRIDO MAXIMO LEON",
       "RUT_PROFESIONAL": "98765432-1"
     }, {
       "TIPO_CONSULTA": "Kinesiología",
       "RUT_EMPRESA": "76123456-1",
-      "NOMBRE_PROFESIONAL": "ZOE SAMANTHA CARRASCO GARRIDO",
+      "NOMBRE_PROFESIONAL": "CARRASCO GARRIDO ZOE SAMANTHA",
       "RUT_PROFESIONAL": "12345678-9"
     }
   ]
 }
 ```
 
-A continuación hay cosas a tener en cuenta,  ya que así los trabaja NuevaMasVida.
+A continuación hay cosas a tener en cuenta, ya que así los trabaja NuevaMasVida.
 
 ⚠️ Todos los nombres deben ir en mayúsculas y deben ser completos (dos nombres y dos apellidos)
+
+⚠️ Todos los nombres deben ir con los apellido primero y luego los nombres
 
 ⚠️ Las tildes en los nombres deben omitirse
 
@@ -98,12 +100,12 @@ El archivo final de configuración quedaría así:
     {
       "TIPO_CONSULTA": "Consulta médica",
       "RUT_EMPRESA": "98765432-1",
-      "NOMBRE_PROFESIONAL": "MAXIMO LEON CARRASCO GARRIDO",
+      "NOMBRE_PROFESIONAL": "CARRASCO GARRIDO MAXIMO LEON",
       "RUT_PROFESIONAL": "98765432-1"
     }, {
       "TIPO_CONSULTA": "Kinesiología",
       "RUT_EMPRESA": "76123456-1",
-      "NOMBRE_PROFESIONAL": "ZOE SAMANTHA CARRASCO GARRIDO",
+      "NOMBRE_PROFESIONAL": "CARRASCO GARRIDO ZOE SAMANTHA",
       "RUT_PROFESIONAL": "12345678-9"
     }
   ]
