@@ -111,3 +111,19 @@ El archivo final de configuración quedaría así:
   ]
 }
 ```
+
+## Instalación
+
+En la consola
+
+```bash
+pnpm install
+```
+
+## Uso
+
+En la consola escribe
+
+```bash
+pnpm install
+```
