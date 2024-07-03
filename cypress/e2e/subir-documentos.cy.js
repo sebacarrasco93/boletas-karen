@@ -1,4 +1,4 @@
-describe('Primer intento', () => {
+describe('Subir documentos', () => {
   it(`Procesar`, () => {
     // Eliminar archivos ya subidos
     cy.task('eliminarArchivosYaSubidos');
@@ -48,6 +48,10 @@ describe('Primer intento', () => {
 
           // Abrir URL de reembolso
           cy.visit('https://sv.nuevamasvida.cl/sucursal_virtual/solicitud_reembolso.php');
+
+          // Cerrar modal
+          cy.get('.modal button')
+            .click();
           
           // Confirmar datos y continuar
           cy.get('#chk_verificacion')

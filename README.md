@@ -117,7 +117,7 @@ El archivo final de configuración quedaría así:
 En la consola
 
 ```bash
-pnpm install
+npm install
 ```
 
 ## Uso
@@ -125,7 +125,7 @@ pnpm install
 Asegúrate de tenerlo instalado. Después, en la consola
 
 ```bash
-pnpm start
+npm start
 ```
 
 Y espera a que ocurra la magia 🪄🧙

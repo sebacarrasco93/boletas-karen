@@ -1,12 +1,12 @@
 {
   "name": "boletas-karen",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "cy:run": "cypress run",
-    "start": "cypress run --browser chrome --headed --spec cypress/e2e/primer-intento.cy.js"
+    "start": "cypress run --browser chrome --headed --spec cypress/e2e/subir-documentos.cy.js"
   },
   "author": "",
   "license": "ISC",
