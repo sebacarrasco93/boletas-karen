@@ -122,8 +122,10 @@ pnpm install
 
 ## Uso
 
-En la consola escribe
+Asegúrate de tenerlo instalado. Después, en la consola
 
 ```bash
-pnpm install
+pnpm start
 ```
+
+Y espera a que ocurra la magia 🪄🧙
