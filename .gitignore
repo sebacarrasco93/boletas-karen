@@ -3,3 +3,9 @@ videos
 cypress.env.json
 .DS_Store
 cypress/screenshots
+google-credentials.json
+DEJAR_BOLETAS
+email.config.json
+PARA_ENVIAR
+DEJAR_BOLETAS_MOCK
+PARA_ENVIAR_MOCK

@@ -1,0 +1,114 @@
+<!-- Fixture SINTÉTICO para tests: replica la estructura real de
+     estado_reembolso.php con datos ficticios (folios, montos, RUTs
+     inventados). No es una descarga real de la Isapre. -->
+<div id="accordion">
+
+  <!-- Autorizada directamente -->
+  <div class="accordion-group" id="solic_900000000001">
+    <div class="accordion-heading">
+      <h4 class="panel-title2">
+        <a class="accordion-toggle" href="#reem_900000000001">
+          <div class="row-fluid">
+            <span class="span4">Folio: 900000000001</span>
+            <span class="span3">Estado:
+              <span class="text-center" style="background:#008dcf;color:white;width:100px;display:inline-block;">AUTORIZADA</span>
+            </span>
+          </div>
+        </a>
+      </h4>
+    </div>
+    <div id="reem_900000000001" class="accordion-body collapse">
+      <div class="accordion-inner">
+        <table>
+          <tbody>
+            <tr><td class="space_tr">Fecha de emisión</td><td>: 01/01/2026</td></tr>
+            <tr><td class="space_tr">N° documento</td><td>: 111</td></tr>
+            <tr><td class="space_tr">Monto documento &nbsp;&nbsp;&nbsp;</td><td>: $10.000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Devuelta, sin reintento -->
+  <div class="accordion-group" id="solic_900000000002">
+    <div class="accordion-heading">
+      <h4 class="panel-title2">
+        <a class="accordion-toggle" href="#reem_900000000002">
+          <div class="row-fluid">
+            <span class="span4">Folio: 900000000002</span>
+            <span class="span3">Estado:
+              <span class="text-center" style="background:#008dcf;color:white;width:100px;display:inline-block;">DEVUELTA</span>
+            </span>
+          </div>
+        </a>
+      </h4>
+    </div>
+    <div id="reem_900000000002" class="accordion-body collapse">
+      <div class="accordion-inner">
+        <table>
+          <tbody>
+            <tr><td class="space_tr">Tipo prestación</td><td>: CONSULTA MEDICA</td></tr>
+            <tr><td class="space_tr">N° documento &nbsp;&nbsp;&nbsp;</td><td>: 222</td></tr>
+            <tr><td class="space_tr">RUT documento</td><td>: 11.111.111-1</td></tr>
+            <tr><td class="space_tr">Motivos rechazo</td><td> : ANTECEDENTES INSUFICIENTES</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Devuelta primero, luego autorizada en otra solicitud (mismo folio 333) -->
+  <div class="accordion-group" id="solic_900000000003">
+    <div class="accordion-heading">
+      <h4 class="panel-title2">
+        <a class="accordion-toggle" href="#reem_900000000003">
+          <div class="row-fluid">
+            <span class="span4">Folio: 900000000003</span>
+            <span class="span3">Estado:
+              <span class="text-center" style="background:#008dcf;color:white;width:100px;display:inline-block;">DEVUELTA</span>
+            </span>
+          </div>
+        </a>
+      </h4>
+    </div>
+    <div id="reem_900000000003" class="accordion-body collapse">
+      <div class="accordion-inner">
+        <table>
+          <tbody>
+            <tr><td class="space_tr">N° documento &nbsp;&nbsp;&nbsp;</td><td>: 333</td></tr>
+            <tr><td class="space_tr">RUT documento</td><td>: 22.222.222-2</td></tr>
+            <tr><td class="space_tr">Motivos rechazo</td><td> : BOLETA YA TRAMITADA EN OTRA SOLICITUD</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-group" id="solic_900000000004">
+    <div class="accordion-heading">
+      <h4 class="panel-title2">
+        <a class="accordion-toggle" href="#reem_900000000004">
+          <div class="row-fluid">
+            <span class="span4">Folio: 900000000004</span>
+            <span class="span3">Estado:
+              <span class="text-center" style="background:#008dcf;color:white;width:100px;display:inline-block;">AUTORIZADA</span>
+            </span>
+          </div>
+        </a>
+      </h4>
+    </div>
+    <div id="reem_900000000004" class="accordion-body collapse">
+      <div class="accordion-inner">
+        <table>
+          <tbody>
+            <tr><td class="space_tr">Fecha de emisión</td><td>: 02/01/2026</td></tr>
+            <tr><td class="space_tr">N° documento</td><td>: 333</td></tr>
+            <tr><td class="space_tr">Monto documento &nbsp;&nbsp;&nbsp;</td><td>: $30.000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
