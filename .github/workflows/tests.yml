@@ -1,0 +1,75 @@
+name: Tests
+
+# Solo corre tests unitarios y contra el mock local (mock-nuevamasvida/), con
+# datos 100% ficticios. Nunca contra el sitio real de la Isapre — eso
+# requeriría credenciales reales y podría generar solicitudes reales.
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Vitest (patrones de PDF, manejo de archivos, tracking, correo)
+        run: pnpm test
+
+  e2e-mock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm approve-builds --all
+
+      # Cypress necesita algunas librerías de sistema en Ubuntu (xvfb, libgtk, etc.)
+      # que no vienen instaladas por defecto en el runner. install/runTests en
+      # false porque el binario y las dependencias ya se instalaron arriba con pnpm.
+      - name: Librerías de sistema para Cypress
+        uses: cypress-io/github-action@v6
+        with:
+          install: false
+          runTests: false
+
+      - name: Sembrar boleta de ejemplo (datos ficticios)
+        run: pnpm mock:sembrar-boleta
+
+      - name: Subir boleta contra el mock
+        run: pnpm start:mock
+
+      - name: Revisar aprobadas contra el mock
+        run: pnpm revisar-aprobadas:mock
+
+      - name: Verificar que la boleta de ejemplo terminó en PARA_ENVIAR_MOCK/zip
+        run: test -f PARA_ENVIAR_MOCK/zip/boleta-ejemplo.pdf
+
+      - name: Smoke test de enviar-correo (cancela el envío, nunca manda nada real)
+        run: |
+          mkdir -p PARA_ENVIAR/zip
+          echo "boleta de prueba" > PARA_ENVIAR/zip/boleta-ejemplo.pdf
+          cp example.email.config.json email.config.json
+          echo "n" | node correo/enviar-correo.js
