@@ -3,14 +3,34 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "packageManager": "pnpm@11.24.0",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
+    "test:pdf": "vitest run boleta-formatos",
     "cy:run": "cypress run",
-    "start": "cypress run --browser chrome --headed --spec cypress/e2e/primer-intento.cy.js"
+    "start": "cypress run --browser chrome --headed --spec cypress/e2e/subir-boletas.cy.js",
+    "revisar-aprobadas": "cypress run --browser chrome --headed --spec cypress/e2e/revisar-aprobadas.cy.js",
+    "enviar-correo": "node correo/enviar-correo.js",
+    "mock:server": "node mock-nuevamasvida/servidor.js",
+    "mock:cy:subir": "cypress run --env MOCK=true --spec cypress/e2e/subir-boletas.cy.js",
+    "mock:cy:revisar-aprobadas": "cypress run --env MOCK=true --spec cypress/e2e/revisar-aprobadas.cy.js",
+    "mock:sembrar-boleta": "node mock-nuevamasvida/generar-boleta-ejemplo.js",
+    "start:mock": "start-server-and-test mock:server http://localhost:4567 mock:cy:subir",
+    "revisar-aprobadas:mock": "start-server-and-test mock:server http://localhost:4567 mock:cy:revisar-aprobadas"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "cypress": "^13.13.0"
+    "cypress": "^15.21.1",
+    "express": "^5.2.1",
+    "pdf-lib": "^1.17.1",
+    "start-server-and-test": "^3.0.12",
+    "vitest": "^4.1.11"
+  },
+  "dependencies": {
+    "archiver": "^8.0.0",
+    "googleapis": "^176.0.0",
+    "nodemailer": "^9.0.6",
+    "pdf-parse": "^2.4.5"
   }
 }
