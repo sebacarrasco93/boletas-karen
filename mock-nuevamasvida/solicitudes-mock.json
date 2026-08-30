@@ -1,0 +1,6 @@
+[
+  { "solicitudId": "900000000001", "folio": "9001", "estado": "AUTORIZADA" },
+  { "solicitudId": "900000000002", "folio": "9002", "estado": "DEVUELTA", "motivoRechazo": "ANTECEDENTES INSUFICIENTES" },
+  { "solicitudId": "900000000003", "folio": "9003", "estado": "DEVUELTA", "motivoRechazo": "BOLETA YA TRAMITADA EN OTRA SOLICITUD" },
+  { "solicitudId": "900000000004", "folio": "9003", "estado": "AUTORIZADA" }
+]
