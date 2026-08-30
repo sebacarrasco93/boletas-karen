@@ -1,0 +1,13 @@
+{
+  "REMITENTE": {
+    "EMAIL": "tucorreo@yahoo.com",
+    "NOMBRE": "Tu Nombre",
+    "APP_PASSWORD": "xxxx xxxx xxxx xxxx"
+  },
+  "DESTINATARIO": {
+    "EMAIL": "destinatario@ejemplo.cl",
+    "NOMBRE": "Nombre del Destinatario"
+  },
+  "ASUNTO": "Boletas aprobadas - [MES AÑO]",
+  "MENSAJE": "Estimados,\n\nAdjunto el detalle de las boletas ya aprobadas por la Isapre.\n\nSaludos,\n[Tu nombre]"
+}
