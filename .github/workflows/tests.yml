@@ -15,9 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Sin "version" acá: se toma de "packageManager" en package.json.
+      # Especificarla en ambos lados choca (ERR_PNPM_BAD_PM_VERSION).
       - uses: pnpm/action-setup@v4
-        with:
-          version: 11
 
       - uses: actions/setup-node@v4
         with:
@@ -34,9 +34,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Sin "version" acá: se toma de "packageManager" en package.json.
+      # Especificarla en ambos lados choca (ERR_PNPM_BAD_PM_VERSION).
       - uses: pnpm/action-setup@v4
-        with:
-          version: 11
 
       - uses: actions/setup-node@v4
         with:
