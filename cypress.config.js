@@ -4,6 +4,7 @@ const path = require('path');
 const { registrarBoletaSubida: registrarEnGoogleSheets } = require('./google-sheets');
 const { extraerDatosBoleta: extraerDatosDelPdf } = require('./boleta-formatos');
 const gestorArchivos = require('./gestor-archivos');
+const { CARPETA_SUBIDAS } = require('./constantes');
 const { parsearSolicitudes, agruparPorFolio } = require('./revisar-aprobadas/parsear-estado');
 const { moverBoletasAprobadas } = require('./revisar-aprobadas/mover-aprobadas');
 
@@ -47,8 +48,8 @@ module.exports = defineConfig({
           return gestorArchivos.obtenerArchivosEnCarpeta(carpeta);
         },
 
-        renombrarArchivo(archivo) {
-          return gestorArchivos.renombrarArchivo(carpeta, archivo);
+        moverASubidas(archivo) {
+          return gestorArchivos.moverASubidas(carpeta, archivo);
         },
 
         eliminarArchivosYaSubidos() {
@@ -79,13 +80,13 @@ module.exports = defineConfig({
 
         // Recibe el HTML de estado_reembolso.php (ya logueado), determina qué
         // folios quedaron AUTORIZADA/DEVUELTA, y mueve a PARA_ENVIAR/zip las
-        // boletas locales (__SUBIDA__...) cuyo folio ya está aprobado.
+        // boletas de subidas/ cuyo folio ya está aprobado.
         async procesarEstadoReembolso(html) {
           const solicitudes = parsearSolicitudes(html);
           const folios = agruparPorFolio(solicitudes);
 
           return moverBoletasAprobadas({
-            carpetaOrigen: carpeta,
+            carpetaOrigen: path.join(carpeta, CARPETA_SUBIDAS),
             carpetaDestino: carpetaParaEnviar,
             folios,
           });

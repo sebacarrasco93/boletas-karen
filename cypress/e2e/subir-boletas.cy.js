@@ -5,6 +5,29 @@ const { obtenerBaseUrl, obtenerCarpetaBoletas } = require('../support/sitio');
 // repetir el flujo completo podría enviar dos veces una solicitud ya recibida.
 const visitar = (url) => cy.visit(url, { retryOnStatusCodeFailure: true });
 
+// El segundo paso del formulario se abre con un clic, así que cy.visit no cubre
+// sus 522. Reabrirlo es seguro: todavía no se ha enviado nada.
+const abrirFormulario = (baseUrl, intentos = 3) => {
+  visitar(`${baseUrl}/sucursal_virtual/solicitud_reembolso.php`);
+
+  // Confirmar datos y continuar
+  cy.get('#chk_verificacion')
+    .click();
+  cy.get('#activo > img')
+    .click();
+
+  cy.get('body')
+    .should(($body) => {
+      expect($body.find('#bnf_rut').length > 0 || /Error code 5\d\d/.test($body.text())).to.equal(true);
+    })
+    .then(($body) => {
+      if ($body.find('#bnf_rut').length > 0) return;
+      if (intentos <= 1) throw new Error('El sitio no abrió el formulario de reembolso tras varios intentos.');
+
+      abrirFormulario(baseUrl, intentos - 1);
+    });
+};
+
 describe('Subir boletas', () => {
   it('Procesar', { retries: 0 }, () => {
     // Eliminar archivos ya subidos (dedup) y boletas de prueba ya usadas
@@ -76,14 +99,8 @@ describe('Subir boletas', () => {
               cy.log('⚠️ Esta es una boleta de PRUEBA, se subirá igual que una real para validar el flujo.');
             }
 
-            // Abrir URL de reembolso
-            visitar(`${baseUrl}/sucursal_virtual/solicitud_reembolso.php`);
+            abrirFormulario(baseUrl);
 
-            // Confirmar datos y continuar
-            cy.get('#chk_verificacion')
-              .click();
-            cy.get('#activo > img')
-              .click();
             cy.get('#bnf_rut')
               .select(env.NOMBRE);
             cy.get('#srw_tipo_consulta')
@@ -135,7 +152,7 @@ describe('Subir boletas', () => {
             // Verificar que se haya subido
             cy.get('#resp_registro > .titulo', { timeout: 180000 }).contains('Solicitud enviada', { timeout: 180000 });
 
-            cy.task('renombrarArchivo', archivo);
+            cy.task('moverASubidas', archivo);
 
             cy.task('registrarBoletaSubida', {
               fecha: new Date().toISOString(),

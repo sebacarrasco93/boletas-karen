@@ -16,17 +16,17 @@ Para que reconozca las boletas, el RUT debe estar registrado en el archivo de co
 El sistema es inteligente con las boletas:
 
 1) Sabe exactamente qué boletas se subieron, así que no sube duplicadas.
-2) A las que ya se subieron, les agrega `__SUBIDA__` al principio de su nombre, así tienes un control más simple de lo que ya se subió.
+2) Las que ya se subieron pasan a `DEJAR_BOLETAS/subidas/` con su mismo nombre, así tienes un control más simple de lo que ya se subió.
 3) Si insistes con una boleta ya subida, va a eliminar la duplicada y no lo va a subir.
 
 Puedes trabajar de dos formas:
 1) Eliminando las boletas ya subidas
-2) (Recomendada) Deja todo tal como está, ya que las subidas tendrán el nombre `__SUBIDA__ ` serán ignoradas automáticamente.
+2) (Recomendada) Deja todo tal como está, ya que las subidas quedan en `subidas/` y se ignoran automáticamente.
 
 Además:
 
 4) Si no hay boletas pendientes por subir, el sistema no abre el navegador ni intenta iniciar sesión: solo revisa la carpeta y termina de inmediato.
-5) Cada boleta subida exitosamente queda registrada en una planilla de Google Sheets (ver sección "Tracking de boletas subidas" más abajo), además de renombrarse localmente con `__SUBIDA__`.
+5) Cada boleta subida exitosamente queda registrada en una planilla de Google Sheets (ver sección "Tracking de boletas subidas" más abajo), además de moverse localmente a `subidas/`.
 6) El nombre del archivo **ya no importa**: el SII a veces entrega las boletas con prefijos aleatorios (ej. `AAGvIvCZGUcar0UQKhMTTcLgem4:2_bhe_17521819-318.pdf`), así que el RUT del profesional y el folio se extraen directamente del **contenido** del PDF (ver sección "Reconocimiento de formato de boleta" más abajo). Puedes dejar el archivo con cualquier nombre.
 
 ## Instalación
@@ -91,10 +91,10 @@ node boleta-formatos/generar-fixture.js
 ## Estructura del código
 
 - `cypress.config.js`: registra las *tasks* de Cypress (funciones Node que el spec puede invocar) y la config general. Es solo un punto de entrada delgado; la lógica real vive en los módulos de abajo.
-- `gestor-archivos.js`: todo el manejo de `DEJAR_BOLETAS` (listar pendientes, marcar como subida, limpiar duplicados y boletas de prueba). Testeado en `gestor-archivos.test.js`.
+- `gestor-archivos.js`: todo el manejo de `DEJAR_BOLETAS` (listar pendientes, mover a `subidas/`, limpiar duplicados y boletas de prueba). Testeado en `gestor-archivos.test.js`.
 - `boleta-formatos/`: reconocimiento de boletas por contenido del PDF (ver secciones de arriba).
 - `google-sheets.js`: tracking en Google Sheets, "best effort".
-- `constantes.js`: los prefijos `__SUBIDA__` y `PRUEBA_`, compartidos entre las tasks (Node) y el spec (navegador) para que no se desincronicen.
+- `constantes.js`: la carpeta `subidas` y los prefijos `PRUEBA_` y `__SUBIDA__` (este último solo para ignorar archivos antiguos), compartidos entre las tasks (Node) y el spec (navegador) para que no se desincronicen.
 - `cypress/e2e/subir-boletas.cy.js`: el flujo real — login, recorre boletas pendientes, llena el formulario de reembolso, sube, y llama a las tasks de arriba.
 - `revisar-aprobadas/`: revisión del estado de las solicitudes y movimiento de boletas aprobadas (`parsear-estado.js` interpreta el HTML de la Sucursal Virtual, `mover-aprobadas.js` cruza eso con los archivos locales y mueve). `cypress/e2e/revisar-aprobadas.cy.js` es el spec que los usa.
 - `correo/`: envío por SMTP del correo con las boletas aprobadas (`armar-correo.js` es la parte pura/testeada, `crear-zip.js` comprime, `enviar-correo.js` es el CLI que orquesta todo).
@@ -129,8 +129,8 @@ DEJAR_BOLETAS/PRUEBA_cualquier-nombre.pdf
 
 El sistema la procesa igual que una boleta real (queda como buena prueba de humo del flujo completo, incluyendo el envío a la Isapre), pero:
 
-- Al terminar, se marca como `__SUBIDA__PRUEBA_...` igual que cualquier otra.
-- En la **siguiente** corrida, el sistema detecta y elimina automáticamente cualquier archivo `__SUBIDA__PRUEBA_...`, así nunca se acumula ni queda mezclado con el registro de boletas reales. Puedes volver a dejar un archivo `PRUEBA_...` cuando quieras repetir la prueba.
+- Al terminar, pasa a `subidas/` igual que cualquier otra.
+- En la **siguiente** corrida, el sistema detecta y elimina automáticamente cualquier archivo `subidas/PRUEBA_...`, así nunca se acumula ni queda mezclado con el registro de boletas reales. Puedes volver a dejar un archivo `PRUEBA_...` cuando quieras repetir la prueba.
 - Queda igual registrada en Google Sheets, pero marcada con `Es Prueba = SI` para distinguirla fácilmente de las boletas reales.
 
 ### Estructura de carpetas y archivos
@@ -269,9 +269,9 @@ Si no configuras esto, el sistema sigue funcionando igual (solo omite el registr
 pnpm revisar-aprobadas
 ```
 
-Es un comando aparte de `pnpm start` — no sube nada nuevo, solo revisa. Entra a la Sucursal Virtual, abre "Estado de reembolsos" (las solicitudes de los últimos 12 meses) y por cada boleta que ya subiste (`DEJAR_BOLETAS/__SUBIDA__...`):
+Es un comando aparte de `pnpm start` — no sube nada nuevo, solo revisa. Entra a la Sucursal Virtual, abre "Estado de reembolsos" (las solicitudes de los últimos 12 meses) y por cada boleta que ya subiste (`DEJAR_BOLETAS/subidas/`):
 
-- Si el folio quedó **AUTORIZADA** en el portal, mueve el archivo a `PARA_ENVIAR/zip` (le quita el prefijo `__SUBIDA__` de paso), listo para el siguiente `pnpm enviar-correo`.
+- Si el folio quedó **AUTORIZADA** en el portal, mueve el archivo a `PARA_ENVIAR/zip`, listo para el siguiente `pnpm enviar-correo`.
 - Si quedó **DEVUELTA**, no la mueve — te avisa por consola con el motivo de rechazo que dio la Isapre, para que decidas si corresponde resubir con más antecedentes.
 - Si el folio todavía no aparece en el portal (sigue en revisión), no toca nada.
 - Una misma boleta puede tener varios intentos en el historial (ej. devuelta una vez y autorizada después, al reenviarla) — si CUALQUIER intento quedó autorizado, se considera aprobada.

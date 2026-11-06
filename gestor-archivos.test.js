@@ -5,7 +5,7 @@ import path from 'node:path';
 import {
   asegurarCarpeta,
   obtenerArchivosEnCarpeta,
-  renombrarArchivo,
+  moverASubidas,
   eliminarArchivosYaSubidos,
   eliminarBoletasDePrueba,
 } from './gestor-archivos.js';
@@ -43,6 +43,13 @@ describe('obtenerArchivosEnCarpeta', () => {
     expect(archivos.sort()).toEqual(['boleta-1.pdf', 'boleta-2.pdf']);
   });
 
+  it('ignora lo que ya está en subidas/', () => {
+    fs.mkdirSync(path.join(carpeta, 'subidas'));
+    fs.writeFileSync(path.join(carpeta, 'subidas', 'boleta-vieja.pdf'), '');
+
+    expect(obtenerArchivosEnCarpeta(carpeta)).toEqual([]);
+  });
+
   it('ignora la subcarpeta informes/ (los informes viven ahí, no sueltos)', () => {
     fs.writeFileSync(path.join(carpeta, 'boleta-1.pdf'), '');
     fs.mkdirSync(path.join(carpeta, 'informes'));
@@ -66,29 +73,30 @@ describe('obtenerArchivosEnCarpeta', () => {
   });
 });
 
-describe('renombrarArchivo', () => {
-  it('le agrega el prefijo __SUBIDA__', () => {
+describe('moverASubidas', () => {
+  it('la mueve a subidas/ con el mismo nombre', () => {
     fs.writeFileSync(path.join(carpeta, 'boleta.pdf'), 'contenido');
 
-    renombrarArchivo(carpeta, 'boleta.pdf');
+    moverASubidas(carpeta, 'boleta.pdf');
 
-    expect(fs.existsSync(path.join(carpeta, '__SUBIDA__boleta.pdf'))).toBe(true);
+    expect(fs.existsSync(path.join(carpeta, 'subidas', 'boleta.pdf'))).toBe(true);
     expect(fs.existsSync(path.join(carpeta, 'boleta.pdf'))).toBe(false);
   });
 });
 
 describe('eliminarArchivosYaSubidos', () => {
-  it('borra el original si coexiste con su versión __SUBIDA__', () => {
+  it('borra el original si ya está en subidas/', () => {
+    fs.mkdirSync(path.join(carpeta, 'subidas'));
     fs.writeFileSync(path.join(carpeta, 'boleta.pdf'), '');
-    fs.writeFileSync(path.join(carpeta, '__SUBIDA__boleta.pdf'), '');
+    fs.writeFileSync(path.join(carpeta, 'subidas', 'boleta.pdf'), '');
 
     eliminarArchivosYaSubidos(carpeta);
 
     expect(fs.existsSync(path.join(carpeta, 'boleta.pdf'))).toBe(false);
-    expect(fs.existsSync(path.join(carpeta, '__SUBIDA__boleta.pdf'))).toBe(true);
+    expect(fs.existsSync(path.join(carpeta, 'subidas', 'boleta.pdf'))).toBe(true);
   });
 
-  it('no toca archivos que no tienen versión __SUBIDA__', () => {
+  it('no toca archivos que no están en subidas/', () => {
     fs.writeFileSync(path.join(carpeta, 'boleta-pendiente.pdf'), '');
 
     eliminarArchivosYaSubidos(carpeta);
@@ -98,20 +106,22 @@ describe('eliminarArchivosYaSubidos', () => {
 });
 
 describe('eliminarBoletasDePrueba', () => {
-  it('borra las boletas de prueba ya subidas (__SUBIDA__PRUEBA_...)', () => {
-    fs.writeFileSync(path.join(carpeta, '__SUBIDA__PRUEBA_boleta.pdf'), '');
+  it('borra las boletas de prueba ya subidas (subidas/PRUEBA_...)', () => {
+    fs.mkdirSync(path.join(carpeta, 'subidas'));
+    fs.writeFileSync(path.join(carpeta, 'subidas', 'PRUEBA_boleta.pdf'), '');
 
     eliminarBoletasDePrueba(carpeta);
 
-    expect(fs.existsSync(path.join(carpeta, '__SUBIDA__PRUEBA_boleta.pdf'))).toBe(false);
+    expect(fs.existsSync(path.join(carpeta, 'subidas', 'PRUEBA_boleta.pdf'))).toBe(false);
   });
 
   it('no toca boletas reales ya subidas', () => {
-    fs.writeFileSync(path.join(carpeta, '__SUBIDA__boleta-real.pdf'), '');
+    fs.mkdirSync(path.join(carpeta, 'subidas'));
+    fs.writeFileSync(path.join(carpeta, 'subidas', 'boleta-real.pdf'), '');
 
     eliminarBoletasDePrueba(carpeta);
 
-    expect(fs.existsSync(path.join(carpeta, '__SUBIDA__boleta-real.pdf'))).toBe(true);
+    expect(fs.existsSync(path.join(carpeta, 'subidas', 'boleta-real.pdf'))).toBe(true);
   });
 
   it('no toca una boleta de prueba que todavía no se sube', () => {

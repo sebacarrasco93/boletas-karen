@@ -1,10 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-const { PREFIJO_SUBIDA, PREFIJO_PRUEBA } = require('../constantes');
+const { PREFIJO_PRUEBA } = require('../constantes');
 const { extraerDatosBoleta } = require('../boleta-formatos');
 
 // Cruza los folios aprobados/rechazados (de parsear-estado.js) contra las
-// boletas ya subidas en carpetaOrigen (DEJAR_BOLETAS), y mueve a
+// boletas ya subidas en carpetaOrigen (DEJAR_BOLETAS/subidas), y mueve a
 // carpetaDestino (PARA_ENVIAR/zip) las que ya están AUTORIZADA. No toca las
 // boletas de prueba (PREFIJO_PRUEBA) ni las que siguen "en revisión" (ningún
 // folio del portal calza con ellas todavía).
@@ -18,7 +18,7 @@ async function moverBoletasAprobadas({ carpetaOrigen, carpetaDestino, folios }) 
   const infoPorFolio = new Map(folios.map((info) => [info.folio, info]));
 
   const candidatos = fs.readdirSync(carpetaOrigen).filter((archivo) => {
-    return archivo.startsWith(PREFIJO_SUBIDA) && !archivo.startsWith(`${PREFIJO_SUBIDA}${PREFIJO_PRUEBA}`);
+    return path.extname(archivo).toLowerCase() === '.pdf' && !archivo.startsWith(PREFIJO_PRUEBA);
   });
 
   // folio -> [archivos locales con ese folio] (normalmente debería ser 1)
@@ -57,11 +57,10 @@ async function moverBoletasAprobadas({ carpetaOrigen, carpetaDestino, folios }) 
     const archivo = archivos[0];
 
     if (info.aprobado) {
-      const nombreLimpio = archivo.slice(PREFIJO_SUBIDA.length);
-      const rutaDestino = path.join(carpetaDestino, nombreLimpio);
+      const rutaDestino = path.join(carpetaDestino, archivo);
 
       if (fs.existsSync(rutaDestino)) {
-        resultado.ambiguas.push({ folio, archivos: [archivo], motivo: `ya existe ${nombreLimpio} en destino` });
+        resultado.ambiguas.push({ folio, archivos: [archivo], motivo: `ya existe ${archivo} en destino` });
         continue;
       }
 

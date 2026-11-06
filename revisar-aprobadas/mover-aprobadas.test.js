@@ -24,18 +24,18 @@ let carpetaDestino;
 
 beforeEach(() => {
   const base = fs.mkdtempSync(path.join(os.tmpdir(), 'boletas-karen-revisar-'));
-  carpetaOrigen = path.join(base, 'DEJAR_BOLETAS');
+  carpetaOrigen = path.join(base, 'DEJAR_BOLETAS', 'subidas');
   carpetaDestino = path.join(base, 'PARA_ENVIAR', 'zip');
   fs.mkdirSync(carpetaOrigen, { recursive: true });
 });
 
 afterEach(() => {
-  fs.rmSync(path.dirname(carpetaOrigen), { recursive: true, force: true });
+  fs.rmSync(path.dirname(path.dirname(carpetaOrigen)), { recursive: true, force: true });
 });
 
 describe('moverBoletasAprobadas', () => {
-  it('mueve una boleta ya subida cuyo folio quedó AUTORIZADA, sin el prefijo __SUBIDA__', async () => {
-    await crearBoletaDePrueba(path.join(carpetaOrigen, '__SUBIDA__boleta-aprobada.pdf'), { rut: '11111111-1', folio: '111' });
+  it('mueve una boleta ya subida cuyo folio quedó AUTORIZADA y conserva su nombre', async () => {
+    await crearBoletaDePrueba(path.join(carpetaOrigen, 'boleta-aprobada.pdf'), { rut: '11111111-1', folio: '111' });
 
     const resultado = await moverBoletasAprobadas({
       carpetaOrigen,
@@ -44,14 +44,14 @@ describe('moverBoletasAprobadas', () => {
     });
 
     expect(resultado.movidas).toEqual([
-      { folio: '111', archivo: '__SUBIDA__boleta-aprobada.pdf', destino: path.join(carpetaDestino, 'boleta-aprobada.pdf') },
+      { folio: '111', archivo: 'boleta-aprobada.pdf', destino: path.join(carpetaDestino, 'boleta-aprobada.pdf') },
     ]);
     expect(fs.existsSync(path.join(carpetaDestino, 'boleta-aprobada.pdf'))).toBe(true);
-    expect(fs.existsSync(path.join(carpetaOrigen, '__SUBIDA__boleta-aprobada.pdf'))).toBe(false);
+    expect(fs.existsSync(path.join(carpetaOrigen, 'boleta-aprobada.pdf'))).toBe(false);
   });
 
   it('reporta como rechazada una boleta cuyo folio quedó DEVUELTA (y no la mueve)', async () => {
-    await crearBoletaDePrueba(path.join(carpetaOrigen, '__SUBIDA__boleta-rechazada.pdf'), { rut: '11111111-1', folio: '222' });
+    await crearBoletaDePrueba(path.join(carpetaOrigen, 'boleta-rechazada.pdf'), { rut: '11111111-1', folio: '222' });
 
     const resultado = await moverBoletasAprobadas({
       carpetaOrigen,
@@ -61,23 +61,23 @@ describe('moverBoletasAprobadas', () => {
 
     expect(resultado.movidas).toEqual([]);
     expect(resultado.rechazadas).toEqual([
-      { folio: '222', archivo: '__SUBIDA__boleta-rechazada.pdf', motivoRechazo: 'ANTECEDENTES INSUFICIENTES' },
+      { folio: '222', archivo: 'boleta-rechazada.pdf', motivoRechazo: 'ANTECEDENTES INSUFICIENTES' },
     ]);
-    expect(fs.existsSync(path.join(carpetaOrigen, '__SUBIDA__boleta-rechazada.pdf'))).toBe(true);
+    expect(fs.existsSync(path.join(carpetaOrigen, 'boleta-rechazada.pdf'))).toBe(true);
   });
 
   it('no toca una boleta cuyo folio no aparece todavía en el portal (sigue en revisión)', async () => {
-    await crearBoletaDePrueba(path.join(carpetaOrigen, '__SUBIDA__boleta-en-revision.pdf'), { rut: '11111111-1', folio: '333' });
+    await crearBoletaDePrueba(path.join(carpetaOrigen, 'boleta-en-revision.pdf'), { rut: '11111111-1', folio: '333' });
 
     const resultado = await moverBoletasAprobadas({ carpetaOrigen, carpetaDestino, folios: [] });
 
     expect(resultado.movidas).toEqual([]);
     expect(resultado.rechazadas).toEqual([]);
-    expect(fs.existsSync(path.join(carpetaOrigen, '__SUBIDA__boleta-en-revision.pdf'))).toBe(true);
+    expect(fs.existsSync(path.join(carpetaOrigen, 'boleta-en-revision.pdf'))).toBe(true);
   });
 
   it('nunca mueve boletas de prueba, aunque su folio esté AUTORIZADA', async () => {
-    await crearBoletaDePrueba(path.join(carpetaOrigen, '__SUBIDA__PRUEBA_test.pdf'), { rut: '11111111-1', folio: '444' });
+    await crearBoletaDePrueba(path.join(carpetaOrigen, 'PRUEBA_test.pdf'), { rut: '11111111-1', folio: '444' });
 
     const resultado = await moverBoletasAprobadas({
       carpetaOrigen,
@@ -86,12 +86,12 @@ describe('moverBoletasAprobadas', () => {
     });
 
     expect(resultado.movidas).toEqual([]);
-    expect(fs.existsSync(path.join(carpetaOrigen, '__SUBIDA__PRUEBA_test.pdf'))).toBe(true);
+    expect(fs.existsSync(path.join(carpetaOrigen, 'PRUEBA_test.pdf'))).toBe(true);
   });
 
   it('marca como ambigua si dos archivos locales comparten el mismo folio, y no mueve ninguno', async () => {
-    await crearBoletaDePrueba(path.join(carpetaOrigen, '__SUBIDA__uno.pdf'), { rut: '11111111-1', folio: '555' });
-    await crearBoletaDePrueba(path.join(carpetaOrigen, '__SUBIDA__dos.pdf'), { rut: '22222222-2', folio: '555' });
+    await crearBoletaDePrueba(path.join(carpetaOrigen, 'uno.pdf'), { rut: '11111111-1', folio: '555' });
+    await crearBoletaDePrueba(path.join(carpetaOrigen, 'dos.pdf'), { rut: '22222222-2', folio: '555' });
 
     const resultado = await moverBoletasAprobadas({
       carpetaOrigen,
