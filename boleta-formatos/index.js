@@ -20,6 +20,25 @@ const fs = require('fs');
 // esperado. Correr `pnpm test:pdf` valida que cada patrón siga extrayendo bien.
 const formatos = [
   {
+    // Layout estándar del SII, verificado contra una boleta real. Ojo con el texto
+    // que entrega pdf-parse: el RUT viene con signo menos (U+2212), no con guion, y
+    // el del receptor aparece como "Rut:" (por eso el regex distingue mayúsculas).
+    // Ambos regex van anclados a inicio de línea para no tomar "Rut:" del receptor
+    // ni "Res. Ex. N° 83" como folio.
+    id: 'sii-bhe-estandar',
+    descripcion: 'Boleta de Honorarios Electrónica estándar del SII (nombre del emisor arriba, recuadro con N° de folio, "Verifique este documento en www.sii.cl" al pie).',
+    detectar: (texto) => /BOLETA DE HONORARIOS\s+ELECTRONICA/i.test(texto) && /Verifique este documento en www\.sii\.cl/i.test(texto),
+    extraer: (texto) => {
+      const rutMatch = texto.match(/^RUT:\s*([\d.]+\s*[-−–]\s*[\dkK])/m);
+      const folioMatch = texto.match(/^N\s*[°º]\s*(\d+)/m);
+
+      return {
+        rut: rutMatch ? rutMatch[1] : null,
+        folio: folioMatch ? folioMatch[1] : null,
+      };
+    },
+  },
+  {
     // ⚠️ PLANTILLA DE EJEMPLO: sirve para probar el motor de detección/extracción
     // y como referencia de cómo escribir un formato nuevo. NO está verificada
     // contra una boleta real del SII. Va al final de la prioridad a propósito:
@@ -41,7 +60,7 @@ const formatos = [
 
 function limpiarRut(rutCrudo) {
   if (!rutCrudo) return null;
-  return rutCrudo.replace(/\./g, '').trim();
+  return rutCrudo.replace(/[.\s]/g, '').replace(/[−–]/g, '-');
 }
 
 async function extraerTexto(rutaPdf) {
