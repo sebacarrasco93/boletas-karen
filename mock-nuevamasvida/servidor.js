@@ -31,6 +31,14 @@ app.get('/sucursal_virtual/solicitud_reembolso.php', (req, res) => {
   res.send(paginaSolicitudReembolso(datosEnv));
 });
 
+// Con demora a propósito: en el sitio real esta respuesta tarda cientos de ms.
+app.post('/sucursal_virtual/consultas/datos_prestadores.php', (req, res) => {
+  const profesional = datosEnv.DATOS_PROFESIONALES.find((p) => p.RUT_PROFESIONAL === req.body.rut);
+  const respuesta = profesional ? { cod: 'ok', desc: profesional.NOMBRE_PROFESIONAL } : { cod: 'error' };
+
+  setTimeout(() => res.json(respuesta), 500);
+});
+
 app.get('/sucursal_virtual/estado_reembolso.php', (req, res) => {
   res.send(paginaEstadoReembolso(solicitudesMock));
 });

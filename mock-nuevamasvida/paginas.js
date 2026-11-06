@@ -65,6 +65,7 @@ function paginaSolicitudReembolso(datosEnv) {
   <button id="continuar_datos" type="button">Continuar</button>
 
   <input id="srw_rut_tratante" type="text">
+  <input id="srw_nom_tratante" type="text">
   <input id="archivo" type="file">
   <input id="archivo_oa" type="file">
 
@@ -77,7 +78,28 @@ function paginaSolicitudReembolso(datosEnv) {
   </div>
 
   <script>
+    // Igual que el sitio real: el nombre llega de forma asíncrona al salir del
+    // campo RUT, y sin nombre el formulario se rechaza.
+    document.getElementById('srw_rut_tratante').addEventListener('blur', function (evento) {
+      fetch('/sucursal_virtual/consultas/datos_prestadores.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'rut=' + encodeURIComponent(evento.target.value),
+      })
+        .then(function (respuesta) { return respuesta.json(); })
+        .then(function (datos) {
+          document.getElementById('srw_nom_tratante').value = datos.cod === 'ok' ? datos.desc : '';
+        });
+    });
+
     document.getElementById('procesar_solreembolso').addEventListener('click', function () {
+      var error = document.getElementById('error');
+      if (!document.getElementById('srw_nom_tratante').value.trim()) {
+        error.textContent = 'Atención: Ingresar Nombre del médico';
+        error.style.display = 'block';
+        return;
+      }
+
       var resp = document.getElementById('resp_registro');
       resp.style.display = 'block';
       resp.querySelector('.titulo').textContent = 'Solicitud enviada';

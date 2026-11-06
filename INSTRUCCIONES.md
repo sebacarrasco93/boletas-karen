@@ -159,7 +159,7 @@ Nunca corre contra el sitio real ni con credenciales reales — no las necesita,
 ## 9. Problemas comunes
 
 - **"Falta cypress.env.json"**: cópialo desde `example.cypress.env.json` (ver 2.1).
-- **522 / timeout al correr `pnpm start` o `pnpm revisar-aprobadas`**: el sitio de la Isapre es intermitente. El sistema reintenta solo (hasta 3 veces); si sigue fallando, espera un rato y corre de nuevo.
+- **522 / timeout al correr `pnpm start` o `pnpm revisar-aprobadas`**: el sitio de la Isapre es intermitente. El sistema reintenta solo cada página; si sigue fallando, espera un rato y corre de nuevo. `pnpm start` no repite el flujo completo para no duplicar solicitudes: si falló después de enviar el formulario, revisa "Estado de reembolsos" antes de volver a correrlo.
 - **Una boleta no se sube y avisa "no se reconoció el formato"**: es un formato de PDF nuevo — usa `/analizar-boleta` (punto 7).
 - **Una boleta no se sube y avisa "el RUT no está en DATOS_PROFESIONALES"**: falta agregar (o corregir) ese profesional en `cypress.env.json`.
 - **`pnpm enviar-correo` dice que falta `email.config.json`**: cópialo desde `example.email.config.json` (ver 2.4).

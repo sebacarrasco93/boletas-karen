@@ -14,9 +14,12 @@ module.exports = defineConfig({
   // expone todas de una. El spec usa cy.env(), nunca Cypress.env().
   allowCypressEnv: false,
   e2e: {
+    // Cada página del sitio real puede tardar más de 20 segundos en cargar.
+    pageLoadTimeout: 180000,
+    defaultCommandTimeout: 30000,
     // El sitio de la Isapre es intermitente (522/timeouts de Cloudflare de a ratos),
-    // así que reintentamos el flujo completo; el dedup por __SUBIDA__ evita duplicar
-    // boletas que ya se hayan alcanzado a subir en un intento anterior.
+    // así que reintentamos el flujo completo. subir-boletas.cy.js lo desactiva: ahí
+    // un reintento tras enviar el formulario podría duplicar la solicitud.
     retries: {
       runMode: 2,
       openMode: 0,

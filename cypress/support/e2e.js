@@ -16,5 +16,9 @@
 // Import commands.js using ES2015 syntax:
 import './commands'
 
+// Los errores de JavaScript del sitio (ej. "$ is not defined" si jQuery tarda en
+// cargar) no deben botar la corrida: si algo falta, fallará el paso que lo necesite.
+Cypress.on('uncaught:exception', () => false);
+
 // Alternatively you can use CommonJS syntax:
 // require('./commands')

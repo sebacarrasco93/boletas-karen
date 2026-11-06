@@ -1,8 +1,12 @@
 const { PREFIJO_PRUEBA } = require('../../constantes');
 const { obtenerBaseUrl, obtenerCarpetaBoletas } = require('../support/sitio');
 
+// El sitio devuelve 522 de a ratos: se reintenta cada visita por separado, ya que
+// repetir el flujo completo podría enviar dos veces una solicitud ya recibida.
+const visitar = (url) => cy.visit(url, { retryOnStatusCodeFailure: true });
+
 describe('Subir boletas', () => {
-  it('Procesar', () => {
+  it('Procesar', { retries: 0 }, () => {
     // Eliminar archivos ya subidos (dedup) y boletas de prueba ya usadas
     cy.task('eliminarArchivosYaSubidos');
     cy.task('eliminarBoletasDePrueba');
@@ -22,7 +26,7 @@ describe('Subir boletas', () => {
         }
 
         // El login se movió al subdominio de Sucursal Virtual (antes vivía en la home de www.nuevamasvida.cl)
-        cy.visit(`${baseUrl}/`);
+        visitar(`${baseUrl}/`);
 
         // Escribir RUT y clave. { log: false } evita que queden en texto plano
         // en el Command Log (y por lo tanto en screenshots/videos de fallos).
@@ -73,7 +77,7 @@ describe('Subir boletas', () => {
             }
 
             // Abrir URL de reembolso
-            cy.visit(`${baseUrl}/sucursal_virtual/solicitud_reembolso.php`);
+            visitar(`${baseUrl}/sucursal_virtual/solicitud_reembolso.php`);
 
             // Confirmar datos y continuar
             cy.get('#chk_verificacion')
@@ -90,6 +94,10 @@ describe('Subir boletas', () => {
               .type(folioDocumento);
             cy.get('#continuar_datos')
               .click();
+
+            // Al salir del campo RUT, el sitio consulta el nombre del médico
+            cy.intercept('POST', '**/datos_prestadores.php').as('prestador');
+
             cy.get('#srw_rut_tratante')
               .type(rutEncontrado.RUT_PROFESIONAL);
 
@@ -108,8 +116,14 @@ describe('Subir boletas', () => {
             cy.get('#chk_verificacion')
               .click();
 
-            // Darle 100 ms para que aparezca el nombre del profesional
-            cy.wait(100);
+            // El sitio completa el nombre con la respuesta de esa consulta. Si no
+            // conoce al profesional, lo deja vacío y hay que escribirlo.
+            cy.wait('@prestador', { timeout: 60000 });
+            cy.get('#srw_nom_tratante').then(($nombre) => {
+              if (!$nombre.val().trim()) {
+                cy.wrap($nombre).type(rutEncontrado.NOMBRE_PROFESIONAL);
+              }
+            });
 
             // Subir y esperar
             cy.get('#procesar_solreembolso')
@@ -119,7 +133,7 @@ describe('Subir boletas', () => {
             cy.get('#error').should('not.visible');
 
             // Verificar que se haya subido
-            cy.get('#resp_registro > .titulo').contains('Solicitud enviada');
+            cy.get('#resp_registro > .titulo', { timeout: 180000 }).contains('Solicitud enviada', { timeout: 180000 });
 
             cy.task('renombrarArchivo', archivo);
 
